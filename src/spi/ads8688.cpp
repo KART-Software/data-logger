@@ -1,6 +1,6 @@
 #include "ads8688.hpp"
 
-Ads8688::Ads8688(spi_host_device_t host = ADS8688_SPI_HOST, spi_device_interface_config_t deviceConfig = ADS8688_SPI_DEVICE_CONFIG) : SpiDevice(host, deviceConfig)
+Ads8688::Ads8688(spi_host_device_t host, spi_device_interface_config_t deviceConfig) : SpiDevice(host, deviceConfig)
 {
 }
 
