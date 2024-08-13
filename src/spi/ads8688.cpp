@@ -1,13 +1,14 @@
 #include "ads8688.hpp"
 
-Ads8688::Ads8688(spi_host_device_t host = ADS8688_SPI_HOST, spi_device_interface_config_t deviceConfig = BMI160_SPI_DEVICE_CONFIG) : SpiDevice(host, deviceConfig)
+Ads8688::Ads8688(spi_host_device_t host = ADS8688_SPI_HOST, spi_device_interface_config_t deviceConfig = ADS8688_SPI_DEVICE_CONFIG) : SpiDevice(host, deviceConfig)
 {
 }
 
 esp_err_t Ads8688::initialize()
 {
-    setReadRanges();
-    setReadModeAutoSeq();
+    esp_err_t err = setReadRanges();
+    err |= setReadModeAutoSeq();
+    return err;
 }
 
 esp_err_t Ads8688::setReadRanges()
@@ -32,11 +33,13 @@ esp_err_t Ads8688::setReadModeAutoSeq()
 
 esp_err_t Ads8688::read()
 {
+    esp_err_t err = 0;
     for (char i = 0; i < 7; i++)
     {
-        writeCommandRegister(NO_OP, rawValues + i);
+        err |= writeCommandRegister(NO_OP, rawValues + i);
     }
-    writeCommandRegister(AUTO_RST, rawValues + 7);
+    err |= writeCommandRegister(AUTO_RST, rawValues + 7);
+    return err;
 }
 
 double Ads8688::getVoltage(uint8_t ch)

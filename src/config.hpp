@@ -5,6 +5,10 @@
 #define SPI_2_MISO_PIN 13
 #define SPI_2_SCLK_PIN 12
 
+#define SPI_3_MOSI_PIN 11 // TODO change
+#define SPI_3_MISO_PIN 13
+#define SPI_3_SCLK_PIN 12
+
 #define BMI160_SPI_HOST SPI2_HOST
 #define BMI160_SPI_CS_PIN 14 // TODO change
 

@@ -4,7 +4,7 @@
 #include "config.hpp"
 #include "spi.hpp"
 
-#define BMI160_SPI_DEVICE_CONFIG            \
+#define ADS8688_SPI_DEVICE_CONFIG           \
     {                                       \
         .command_bits = 0,                  \
         .address_bits = 16,                 \
@@ -57,7 +57,7 @@
 class Ads8688 : SpiDevice
 {
 public:
-    Ads8688(spi_host_device_t host = ADS8688_SPI_HOST, spi_device_interface_config_t deviceConfig = BMI160_SPI_DEVICE_CONFIG);
+    Ads8688(spi_host_device_t host = ADS8688_SPI_HOST, spi_device_interface_config_t deviceConfig = ADS8688_SPI_DEVICE_CONFIG);
     esp_err_t initialize();
     esp_err_t read();
     double getVoltage(uint8_t ch);
