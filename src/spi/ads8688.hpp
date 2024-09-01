@@ -3,38 +3,33 @@
 
 #include "config.hpp"
 #include "spi.hpp"
+#include <Arduino.h>
 
 #define ADS8688_SPI_DEVICE_CONFIG           \
     {                                       \
         .command_bits = 0,                  \
-        .address_bits = 16,                 \
+        .address_bits = 8,                  \
         .dummy_bits = 0,                    \
         .mode = 1,                          \
         .duty_cycle_pos = 128,              \
-        .cs_ena_pretrans = 1,               \
+        .cs_ena_pretrans = 0,               \
         .cs_ena_posttrans = 0,              \
         .clock_speed_hz = 5000000,          \
         .input_delay_ns = 0,                \
         .spics_io_num = ADS8688_SPI_CS_PIN, \
-        .flags = SPI_DEVICE_HALFDUPLEX,     \
+        .flags = 0,                         \
         .queue_size = 1,                    \
     }
-// ADS8688の仕様で先にaddressで後にcommandなので，commandとaddressを入れ替えて使う．
-// ADS8688ではaddressが7bit，commandが1bitである．
 
 #define ADC_NUM_CH 8
-
-#define NUM_COMMAND_REGISTER_BITS 32
-#define NUM_PROGRAM_REGISTER_BITS 24
-
-#define NUM_COMMAND_REGISTER_READ_BITS 16
-#define NUM_PROGRAM_REGISTER_WRITE_BITS 8
 
 #define AUTO_SEQ_EN_ADDR 0x01
 
 /// Registers
-#define NO_OP 0x0000
-#define AUTO_RST 0xA000
+// マニュアルでは0x0000や0xA000などのように32bitで定義されているが，下2桁は全部0なので16bitで使う．こうせざるを得なかった理由はあるがここに書くには余白が少なすぎる．
+#define NO_OP 0x00
+#define AUTO_RST 0xA0
+#define RST 0x85
 
 /// Range Select
 
@@ -59,14 +54,16 @@ class Ads8688 : SpiDevice
 public:
     Ads8688(spi_host_device_t host = ADS8688_SPI_HOST, spi_device_interface_config_t deviceConfig = ADS8688_SPI_DEVICE_CONFIG);
     esp_err_t initialize();
+    esp_err_t reset();
     esp_err_t read();
     double getVoltage(uint8_t ch);
+    uint16_t getRawValue(uint8_t ch);
 
 private:
     uint16_t rawValues[8];
     const uint8_t numCh = ADC_NUM_CH;
-    esp_err_t writeProgramRegister(uint8_t addr, uint8_t data);
-    esp_err_t writeCommandRegister(uint16_t addr, uint16_t *data);
+    esp_err_t writeProgramRegister(uint8_t addr /* 7 bits */, uint8_t txdata);
+    esp_err_t writeCommandRegister(uint8_t addr /* 8 bits */, uint16_t *rxdata);
     esp_err_t setReadModeAutoSeq();
     esp_err_t setReadRanges();
 };
