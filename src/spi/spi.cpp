@@ -1,6 +1,6 @@
 #include "spi.hpp"
 
-SpiDevice::SpiDevice(spi_host_device_t host, spi_device_interface_config_t deviceConfig) : host(host), deviceConfig(deviceConfig), deviceHandle(spi_device_handle_t())
+SpiDevice::SpiDevice(spi_host_device_t host, spi_device_interface_config_t deviceConfig) : host(host), deviceConfig(deviceConfig)
 {
 }
 

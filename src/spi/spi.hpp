@@ -8,7 +8,6 @@ class SpiDevice
 {
 public:
     SpiDevice(spi_host_device_t host, spi_device_interface_config_t deviceConfig);
-    esp_err_t initialize();
 
 private:
     const spi_host_device_t host;
@@ -16,6 +15,7 @@ private:
     spi_device_handle_t deviceHandle;
 
 protected:
+    esp_err_t initialize();
     esp_err_t write(uint16_t command, uint64_t address, const void *data, size_t bits);
     esp_err_t read(uint16_t command, uint64_t address, void *data, size_t bits);
     esp_err_t writeVariableBits(uint16_t command, size_t commandLen, uint64_t address, size_t addressLen, size_t dummyLen, const void *data, size_t bits);

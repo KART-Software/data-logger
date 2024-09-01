@@ -22,6 +22,20 @@
         .queue_size = 1,                      \
     }
 
+#define ACCEL_CONFIG {                 \
+    .power = BMI160_ACCEL_NORMAL_MODE, \
+    .odr = BMI160_ACCEL_ODR_100HZ,     \
+    .range = BMI160_ACCEL_RANGE_4G,    \
+    .bw = BMI160_ACCEL_BW_NORMAL_AVG4, \
+}
+
+#define GYRO_CONFIG {                   \
+    .power = BMI160_GYRO_NORMAL_MODE,   \
+    .odr = BMI160_GYRO_ODR_100HZ,       \
+    .range = BMI160_GYRO_RANGE_500_DPS, \
+    .bw = BMI160_GYRO_BW_NORMAL_MODE,   \
+}
+
 struct AccelGyro
 {
     uint8_t bmi160OK;
@@ -33,32 +47,37 @@ class Bmi160 : SpiDevice
 {
 public:
     Bmi160(spi_host_device_t host = BMI160_SPI_HOST, spi_device_interface_config_t deviceConfig = BMI160_SPI_DEVICE_CONFIG);
-    int8_t initialize();
+    int8_t initialize_();
     AccelGyro getAccelGyro();
+    int8_t getAccelGyro(bmi160_sensor_data *accel, bmi160_sensor_data *gyro);
 
 private:
+    // なぜか最初からaccel_cfgとgyro_cfgをどっちもセットしておくとセンサーがきちんと初期化できない．後から代入するようにする．
+    // これを見つけるのに丸2日ぐらいかかった．死ね．クソ仕様がよ．
     bmi160_dev bmi160Dev = {
         .intf = BMI160_SPI_INTF,
-        .accel_cfg = {
-            .power = BMI160_AUX_NORMAL_MODE,
-            .odr = BMI160_ACCEL_ODR_100HZ,
-            .range = BMI160_ACCEL_RANGE_4G,
-            .bw = BMI160_ACCEL_BW_NORMAL_AVG4,
-        },
-        .gyro_cfg = {
-            .power = BMI160_GYRO_NORMAL_MODE,
-            .odr = BMI160_GYRO_ODR_100HZ,
-            .range = BMI160_GYRO_RANGE_500_DPS,
-            .bw = BMI160_GYRO_BW_NORMAL_MODE,
-        },
-        .read = spiWrite,
-        .write = spiRead,
-        .delay_ms = delay};
+        // .accel_cfg = {
+        //     .power = BMI160_ACCEL_NORMAL_MODE,
+        //     .odr = BMI160_ACCEL_ODR_100HZ,
+        //     .range = BMI160_ACCEL_RANGE_4G,
+        //     .bw = BMI160_ACCEL_BW_NORMAL_AVG4,
+        // },
+        // .gyro_cfg = {
+        //     .power = BMI160_GYRO_NORMAL_MODE,
+        //     .odr = BMI160_GYRO_ODR_100HZ,
+        //     .range = BMI160_GYRO_RANGE_500_DPS,
+        //     .bw = BMI160_GYRO_BW_NORMAL_MODE,
+        // },
+        .read = spiRead,
+        .write = spiWrite,
+        .delay_ms = delay,
+    };
 
+    void setSensorConfig(bmi160_dev *dev);
     // bmi160のライブラリを使うために仕方なくstaticにする．
     // こうしないと
-    //    .read = spiWrite,
-    //    .write = spiRead,
+    //    .read = spiRead,
+    //    .write = spiWrite,
     // のように書けない．
     static Bmi160 *self;
     static int8_t spiWrite(uint8_t dev_addr, uint8_t reg_addr, uint8_t *data, uint16_t len);
