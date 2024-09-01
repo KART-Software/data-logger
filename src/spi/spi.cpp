@@ -34,7 +34,20 @@ esp_err_t SpiDevice::read(uint16_t command, uint64_t address, void *data, size_t
     return spi_device_transmit(deviceHandle, &trans);
 }
 
-esp_err_t SpiDevice::writeVariableBits(uint16_t command, size_t commandLen, uint64_t address, size_t addressLen, size_t dummyLen, const void *data, size_t bits)
+esp_err_t SpiDevice::writeReadFullDuplex(uint16_t command, uint64_t address, const void *txdata, void *rxdata, size_t txlen, size_t rxlen)
+{
+    spi_transaction_t trans = {
+        .cmd = command,
+        .addr = address,
+        .length = txlen,
+        .rxlength = rxlen,
+        .tx_buffer = txdata,
+        .rx_buffer = rxdata,
+    };
+    return spi_device_transmit(deviceHandle, &trans);
+}
+
+esp_err_t SpiDevice::writeVariableBits(uint16_t command, uint8_t commandLen, uint64_t address, uint8_t addressLen, uint8_t dummyLen, const void *data, size_t bits)
 {
     spi_transaction_ext_t trans = {
         .base = {
@@ -52,7 +65,7 @@ esp_err_t SpiDevice::writeVariableBits(uint16_t command, size_t commandLen, uint
     return spi_device_queue_trans(deviceHandle, (spi_transaction_t *)&trans, portMAX_DELAY);
 }
 
-esp_err_t SpiDevice::readVariableBits(uint16_t command, size_t commandLen, uint64_t address, size_t addressLen, size_t dummyLen, void *data, size_t bits)
+esp_err_t SpiDevice::readVariableBits(uint16_t command, uint8_t commandLen, uint64_t address, uint8_t addressLen, uint8_t dummyLen, void *data, size_t bits)
 {
     spi_transaction_ext_t trans = {
         .base = {

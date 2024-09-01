@@ -18,8 +18,9 @@ protected:
     esp_err_t initialize();
     esp_err_t write(uint16_t command, uint64_t address, const void *data, size_t bits);
     esp_err_t read(uint16_t command, uint64_t address, void *data, size_t bits);
-    esp_err_t writeVariableBits(uint16_t command, size_t commandLen, uint64_t address, size_t addressLen, size_t dummyLen, const void *data, size_t bits);
-    esp_err_t readVariableBits(uint16_t command, size_t commandLen, uint64_t address, size_t addressLen, size_t dummyLen, void *data, size_t bits);
+    esp_err_t writeReadFullDuplex(uint16_t command, uint64_t address, const void *txdata, void *rxdata, size_t txlen, size_t rxlen);
+    esp_err_t writeVariableBits(uint16_t command, uint8_t commandLen, uint64_t address, uint8_t addressLen, uint8_t dummyLen, const void *data, size_t bits);
+    esp_err_t readVariableBits(uint16_t command, uint8_t commandLen, uint64_t address, uint8_t addressLen, uint8_t dummyLen, void *data, size_t bits);
 };
 
 #define SPI_BUS_2_CONFIG                                \
