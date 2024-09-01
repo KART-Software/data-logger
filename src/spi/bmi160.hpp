@@ -47,7 +47,7 @@ class Bmi160 : SpiDevice
 {
 public:
     Bmi160(spi_host_device_t host = BMI160_SPI_HOST, spi_device_interface_config_t deviceConfig = BMI160_SPI_DEVICE_CONFIG);
-    int8_t initialize_();
+    int8_t initialize();
     AccelGyro getAccelGyro();
     int8_t getAccelGyro(bmi160_sensor_data *accel, bmi160_sensor_data *gyro);
 
@@ -74,6 +74,7 @@ private:
     };
 
     void setSensorConfig(bmi160_dev *dev);
+
     // bmi160のライブラリを使うために仕方なくstaticにする．
     // こうしないと
     //    .read = spiRead,

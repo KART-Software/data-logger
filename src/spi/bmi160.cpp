@@ -7,9 +7,9 @@ Bmi160::Bmi160(spi_host_device_t host, spi_device_interface_config_t deviceConfi
     self = this;
 }
 
-int8_t Bmi160::initialize_()
+int8_t Bmi160::initialize()
 {
-    esp_err_t err_ = initialize();
+    esp_err_t err_ = SpiDevice::initialize();
     if (err_ != ESP_OK)
     {
         return err_;
