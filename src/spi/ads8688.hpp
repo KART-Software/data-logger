@@ -59,6 +59,9 @@ public:
     double getVoltage(uint8_t ch);
     uint16_t getRawValue(uint8_t ch);
 
+    // bytes[startByte] から順に8チャンネル分のrawValues(16バイト)のデータを書き込む
+    void getBytes(uint8_t *bytes, uint startByte);
+
 private:
     uint16_t rawValues[8];
     const uint8_t numCh = ADC_NUM_CH;

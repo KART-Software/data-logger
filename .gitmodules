@@ -1,3 +1,6 @@
 [submodule "lib/BMI160_SensorAPI"]
 	path = lib/BMI160_SensorAPI
 	url = https://github.com/boschsensortec/BMI160_SensorAPI.git
+[submodule "lib/SparkFun_u-blox_GNSS_Arduino_Library"]
+	path = lib/SparkFun_u-blox_GNSS_Arduino_Library
+	url = https://github.com/sparkfun/SparkFun_u-blox_GNSS_Arduino_Library.git

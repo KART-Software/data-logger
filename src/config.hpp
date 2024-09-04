@@ -32,4 +32,11 @@
 #define CAN_TX_PIN 35
 #define CAN_RX_PIN 36
 
+///////////
+/// GPS ///
+///////////
+
+#define GPS_MODULE_NEO_M8U
+// #define GPS_MODULE_ZOE_M8Q
+
 #endif

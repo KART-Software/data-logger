@@ -25,14 +25,14 @@
 #define ACCEL_CONFIG {                 \
     .power = BMI160_ACCEL_NORMAL_MODE, \
     .odr = BMI160_ACCEL_ODR_100HZ,     \
-    .range = BMI160_ACCEL_RANGE_4G,    \
+    .range = BMI160_ACCEL_RANGE_2G,    \
     .bw = BMI160_ACCEL_BW_NORMAL_AVG4, \
 }
 
 #define GYRO_CONFIG {                   \
     .power = BMI160_GYRO_NORMAL_MODE,   \
     .odr = BMI160_GYRO_ODR_100HZ,       \
-    .range = BMI160_GYRO_RANGE_500_DPS, \
+    .range = BMI160_GYRO_RANGE_250_DPS, \
     .bw = BMI160_GYRO_BW_NORMAL_MODE,   \
 }
 
@@ -49,7 +49,9 @@ public:
     Bmi160(spi_host_device_t host = BMI160_SPI_HOST, spi_device_interface_config_t deviceConfig = BMI160_SPI_DEVICE_CONFIG);
     int8_t initialize();
     AccelGyro getAccelGyro();
-    int8_t getAccelGyro(bmi160_sensor_data *accel, bmi160_sensor_data *gyro);
+
+    // bytes[startByte] から順に加速度とジャイロ(12バイト)のデータを書き込む
+    void getBytes(uint8_t *bytes, uint startByte);
 
 private:
     // なぜか最初からaccel_cfgとgyro_cfgをどっちもセットしておくとセンサーがきちんと初期化できない．後から代入するようにする．
@@ -72,6 +74,7 @@ private:
         .write = spiWrite,
         .delay_ms = delay,
     };
+    AccelGyro accelGyro;
 
     void setSensorConfig(bmi160_dev *dev);
 

@@ -88,3 +88,12 @@ esp_err_t Ads8688::writeCommandRegister(uint8_t addr /* 8 bits */, uint16_t *rxd
     *rxdata = (data[0] << 15) | (data[1] << 7) | (data[2] >> 1);
     return err;
 }
+
+void Ads8688::getBytes(uint8_t *bytes, uint startByte)
+{
+    for (int i = 0; i < 8; i++)
+    {
+        bytes[startByte + 2 * i] = (rawValues[i] >> 8) & 0xFF;
+        bytes[startByte + 2 * i + 1] = rawValues[i] & 0xFF;
+    }
+}
