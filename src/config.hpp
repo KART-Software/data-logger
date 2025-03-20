@@ -5,25 +5,25 @@
 /// SPI ///
 ///////////
 
-#define SPI_2_MOSI_PIN 11
-#define SPI_2_MISO_PIN 13
-#define SPI_2_SCLK_PIN 12
+#define SPI_2_MOSI_PIN 15
+#define SPI_2_MISO_PIN 17
+#define SPI_2_SCLK_PIN 7
 
-#define SPI_3_MOSI_PIN 17
-#define SPI_3_MISO_PIN 16
-#define SPI_3_SCLK_PIN 15
+#define SPI_3_MOSI_PIN 9
+#define SPI_3_MISO_PIN 46
+#define SPI_3_SCLK_PIN 3
 
 #define BMI160_SPI_HOST SPI2_HOST
-#define BMI160_SPI_CS_PIN 14
+#define BMI160_SPI_CS_PIN 16
 
 #define MCP3208_SPI_HOST SPI2_HOST
-#define MCP3208_SPI_CS_PIN 10
+#define MCP3208_SPI_CS_PIN 18
 
 #define ADS8688_SPI_HOST SPI2_HOST
-#define ADS8688_SPI_CS_PIN 10
+#define ADS8688_SPI_CS_PIN 18
 
 #define NEO_M8U_SPI_HOST SPI3_HOST
-#define NEO_M8U_SPI_CS_PIN 18
+#define NEO_M8U_SPI_CS_PIN 10
 
 ///////////
 /// CAN ///
@@ -38,5 +38,19 @@
 
 #define GPS_MODULE_NEO_M8U
 // #define GPS_MODULE_ZOE_M8Q
+
+//////////////////
+/// WHEELSPEED ///
+//////////////////
+
+#define WHEELSPEED_F0_PIN 13
+#define WHEELSPEED_F1_PIN 12
+#define WHEELSPEED_F2_PIN 21
+#define WHEELSPEED_F3_PIN 14
+#define WHEELSPEED_F4_PIN 47
+#define WHEELSPEED_F5_PIN 48
+#define PI 3.14159
+#define WHEELDIAMETER 0.8 // need to change
+#define NUM_OF_TEETH 50   // need to change
 
 #endif
