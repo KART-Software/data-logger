@@ -26,7 +26,9 @@ void Wheelspeed::getangles()
 void Wheelspeed::getBytes(uint8_t *bytes, uint startByte)
 {
     bytes[startByte] = count0;
-    bytes[startByte + 2] = count1;
+    bytes[startByte + 2] = speed0;
+    bytes[startByte + 4] = count1;
+    bytes[startByte + 6] = speed1;
 }
 
 void Wheelspeed::read()
