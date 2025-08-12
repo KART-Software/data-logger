@@ -50,6 +50,6 @@ void loop()
     //     Serial.printf("vol: %f\n", ads8688.getVoltage(6));
     // }
     //
-
+    wheelSpeed.getWheelSpeed();
     delay(1);
 }

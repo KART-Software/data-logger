@@ -12,15 +12,15 @@
 #define BMI160_DATA_LENGTH 12
 #define ADS8688_DATA_LENGTH 16
 #define GPS_DATA_LENGTH 92
-#define WheelSpeed_DATA_LENGTH 8
+#define WHEEL_SPEED_DATA_LENGTH 8
 
-#define CAN_DATA_LENGTH (BMI160_DATA_LENGTH + ADS8688_DATA_LENGTH + GPS_DATA_LENGTH + WheelSpeed_DATA_LENGTH) // 128
+#define CAN_DATA_LENGTH (BMI160_DATA_LENGTH + ADS8688_DATA_LENGTH + GPS_DATA_LENGTH + WHEEL_SPEED_DATA_LENGTH) // 128
 #define CAN_NUM_MESSAGES 15
 
 class CanMaster
 {
 public:
-    CanMaster(Bmi160 &bmi160, Ads8688 &ads8688, GPS &gps, WheelSpeed &WheelSpeed);
+    CanMaster(Bmi160 &bmi160, Ads8688 &ads8688, GPS &gps, WheelSpeed &wheelSpeed);
     esp_err_t initialize();
     esp_err_t send();
     void run();
@@ -30,7 +30,7 @@ private:
     Bmi160 &bmi160;
     Ads8688 &ads8688;
     GPS &gps;
-    WheelSpeed &WheelSpeed;
+    WheelSpeed &wheelSpeed;
     uint8_t data[CAN_DATA_LENGTH];
 
     void getData();
