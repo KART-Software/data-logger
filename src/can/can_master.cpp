@@ -1,6 +1,6 @@
 #include "can_master.hpp"
 
-CanMaster::CanMaster(Bmi160 &bmi160, Ads8688 &ads8688, GPS &gps, WheelSpeed &wheelSpeed) : bmi160(bmi160), ads8688(ads8688), gps(gps), WheelSpeed(WheelSpeed)
+CanMaster::CanMaster(Bmi160 &bmi160, Ads8688 &ads8688, GPS &gps, WheelSpeed &wheelSpeed) : bmi160(bmi160), ads8688(ads8688), gps(gps), wheelSpeed(wheelSpeed)
 {
 }
 
