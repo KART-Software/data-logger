@@ -1,17 +1,17 @@
-#ifndef _WHEELSPEED_HPP_
-#define _WHEELSPEED_HPP_
+#ifndef _WHEEL_SPEED_HPP_
+#define _WHEEL_SPEED_HPP_
 
 #include <driver/pcnt.h>
 #include "config.hpp"
 #include <Arduino.h>
 
-class Wheelspeed
+class WheelSpeed
 {
 public:
     bool initialize();
     void getBytes(uint8_t *bytes, uint startByte);
-    void getwheelspeed();
-    void getangles();
+    void getWheelSpeed();
+    void getAngles();
     void read();
 
 private:

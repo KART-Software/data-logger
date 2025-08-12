@@ -6,15 +6,15 @@
 #include <Arduino.h>
 #include "can/can_master.hpp"
 #include <driver/pcnt.h>
-#include "wheelspeed/wheelspeed.hpp"
+#include "wheel_speed/wheel_speed.hpp"
 
 SpiBus spi2 = SpiBus(SPI2_HOST, SPI_BUS_2_CONFIG);
 Bmi160 bmi160 = Bmi160();
 Ads8688 ads8688 = Ads8688();
 GPS gps;
-Wheelspeed wheelspeed;
+WheelSpeed wheelSpeed;
 
-CanMaster canMaster = CanMaster(bmi160, ads8688, gps, wheelspeed);
+CanMaster canMaster = CanMaster(bmi160, ads8688, gps, WheelSpeed);
 TaskHandle_t canSendTask;
 
 void setup()
@@ -30,16 +30,10 @@ void setup()
 
     gps.initialize();
 
+    wheelSpeed.initialize();
+
     canMaster.initialize();
     xTaskCreatePinnedToCore(startCan, "CanSendTask", 8192, (void *)&canMaster, 1, &canSendTask, 0);
-
-    pcnt_counter_pause(PCNT_UNIT_0);
-    pcnt_counter_clear(PCNT_UNIT_0);
-    pcnt_counter_resume(PCNT_UNIT_0);
-
-    pcnt_counter_pause(PCNT_UNIT_1);
-    pcnt_counter_clear(PCNT_UNIT_1);
-    pcnt_counter_resume(PCNT_UNIT_1);
 }
 
 void loop()
@@ -56,5 +50,6 @@ void loop()
     //     Serial.printf("vol: %f\n", ads8688.getVoltage(6));
     // }
     //
+
     delay(1);
 }

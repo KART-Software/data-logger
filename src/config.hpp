@@ -40,7 +40,7 @@
 // #define GPS_MODULE_ZOE_M8Q
 
 //////////////////
-/// WHEELSPEED ///
+/// WheelSpeed ///
 //////////////////
 
 #define WHEELSPEED_F0_PIN 13

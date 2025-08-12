@@ -1,6 +1,6 @@
 #include "can_master.hpp"
 
-CanMaster::CanMaster(Bmi160 &bmi160, Ads8688 &ads8688, GPS &gps, Wheelspeed &wheelspeed) : bmi160(bmi160), ads8688(ads8688), gps(gps), wheelspeed(wheelspeed)
+CanMaster::CanMaster(Bmi160 &bmi160, Ads8688 &ads8688, GPS &gps, WheelSpeed &WheelSpeed) : bmi160(bmi160), ads8688(ads8688), gps(gps), WheelSpeed(WheelSpeed)
 {
 }
 
@@ -14,7 +14,7 @@ void CanMaster::getData()
     bmi160.getBytes(data, 0);
     ads8688.getBytes(data, BMI160_DATA_LENGTH);
     gps.getBytes(data, BMI160_DATA_LENGTH + ADS8688_DATA_LENGTH);
-    wheelspeed.getBytes(data, BMI160_DATA_LENGTH + ADS8688_DATA_LENGTH + GPS_DATA_LENGTH);
+    WheelSpeed.getBytes(data, BMI160_DATA_LENGTH + ADS8688_DATA_LENGTH + GPS_DATA_LENGTH);
 }
 
 esp_err_t CanMaster::send()
