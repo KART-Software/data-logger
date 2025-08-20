@@ -14,7 +14,7 @@ Ads8688 ads8688 = Ads8688();
 GPS gps;
 WheelSpeed wheelSpeed;
 
-CanMaster canMaster = CanMaster(bmi160, ads8688, gps, WheelSpeed);
+CanMaster canMaster = CanMaster(bmi160, ads8688, gps, wheelSpeed);
 TaskHandle_t canSendTask;
 
 void setup()

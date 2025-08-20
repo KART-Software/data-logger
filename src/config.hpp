@@ -51,6 +51,6 @@
 #define WHEELSPEED_F5_PIN 48
 #define PI 3.14159
 #define WHEELDIAMETER 0.8 // need to change
-#define NUM_OF_TEETH 50   // need to change
+#define NUM_OF_TEETH 10   // need to change
 
 #endif

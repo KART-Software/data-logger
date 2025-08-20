@@ -13,8 +13,8 @@ void CanMaster::getData()
 {
     bmi160.getBytes(data, 0);
     ads8688.getBytes(data, BMI160_DATA_LENGTH);
-    gps.getBytes(data, BMI160_DATA_LENGTH + ADS8688_DATA_LENGTH);
-    WheelSpeed.getBytes(data, BMI160_DATA_LENGTH + ADS8688_DATA_LENGTH + GPS_DATA_LENGTH);
+    wheelSpeed.getBytes(data, BMI160_DATA_LENGTH + ADS8688_DATA_LENGTH);
+    gps.getBytes(data, BMI160_DATA_LENGTH + ADS8688_DATA_LENGTH + WHEEL_SPEED_DATA_LENGTH);
 }
 
 esp_err_t CanMaster::send()

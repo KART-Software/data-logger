@@ -17,6 +17,7 @@ public:
 private:
     int16_t count0, count1;
     double speed0, speed1;
+    int16_t processed_speed0, processed_speed1;
     int16_t angle0, angle1;
     unsigned long lastGetCountTime;
     pcnt_config_t pcnt_config0 =
