@@ -49,8 +49,7 @@
 #define WHEELSPEED_F3_PIN 14
 #define WHEELSPEED_F4_PIN 47
 #define WHEELSPEED_F5_PIN 48
-#define PI 3.14159
-#define WHEELDIAMETER 0.8 // need to change
+#define WHEELDIAMETER 0.398 // need to change
 #define NUM_OF_TEETH 10   // need to change
 
 #endif
