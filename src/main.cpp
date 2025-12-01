@@ -14,7 +14,7 @@ Ads8688 ads8688 = Ads8688();
 GPS gps;
 WheelSpeed wheelSpeed;
 
-CanMaster canMaster = CanMaster(bmi160, ads8688, gps, wheelSpeed);
+CanMaster canMaster = CanMaster(bmi160, ads8688, wheelSpeed, gps);
 TaskHandle_t canSendTask;
 
 void setup()
@@ -30,7 +30,12 @@ void setup()
 
     gps.initialize();
 
-    wheelSpeed.initialize();
+    // 車輪速センサの初期化
+    if (wheelSpeed.initialize()) {
+        Serial.println("WheelSpeed Initialized");
+    } else {
+        Serial.println("WheelSpeed Init Failed");
+    }
 
     canMaster.initialize();
     xTaskCreatePinnedToCore(startCan, "CanSendTask", 8192, (void *)&canMaster, 1, &canSendTask, 0);
@@ -51,5 +56,24 @@ void loop()
     // }
     //
     wheelSpeed.getWheelSpeed();
+
+    // 動作確認用のシリアル表示 (100msごとに表示)
+    static unsigned long lastPrintTime = 0;
+    if (millis() - lastPrintTime > 100)
+    {
+        lastPrintTime = millis();
+        
+        // 4輪の速度を表示
+        Serial.printf("FL: %.1f, FR: %.1f, RL: %.1f, RR: %.1f [km/h]\n", 
+            wheelSpeed.getSpeed(0), 
+            wheelSpeed.getSpeed(1), 
+            wheelSpeed.getSpeed(2), 
+            wheelSpeed.getSpeed(3));
+
+        // デバッグ用: もし速度が出ないときはRawカウントを確認してみてください
+        // Serial.printf("Cnt: %d %d %d %d\n", 
+        //     wheelSpeed.getCount(0), wheelSpeed.getCount(1), 
+        //     wheelSpeed.getCount(2), wheelSpeed.getCount(3));
+    }
     delay(1);
 }
