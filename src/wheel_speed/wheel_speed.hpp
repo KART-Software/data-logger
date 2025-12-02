@@ -10,37 +10,36 @@ class WheelSpeed
 public:
     bool initialize();
     void getBytes(uint8_t *bytes, uint startByte);
-    void getWheelSpeed();
-    void getAngles();
+    void process();
     void read();
 
     // main.cppでシリアルモニタに表示するための「のぞき穴」関数
-    float getSpeed(uint8_t id) {
-        switch(id) {
-            case 0: return (float)speed0;
-            case 1: return (float)speed1;
-            case 2: return (float)speed2;
-            case 3: return (float)speed3;
-            default: return 0.0f;
-        }
-    }
+    // float getSpeed(uint8_t id) {
+    //     switch(id) {
+    //         case 0: return (float)speed0;
+    //         case 1: return (float)speed1;
+    //         case 2: return (float)speed2;
+    //         case 3: return (float)speed3;
+    //         default: return 0.0f;
+    //     }
+    // }
 
-    // デバッグ用にカウント値も見れるようにしておく
-    int16_t getCount(uint8_t id) {
-        switch(id) {
-            case 0: return count0;
-            case 1: return count1;
-            case 2: return count2;
-            case 3: return count3;
-            default: return 0;
-        }
-    }
+    // // デバッグ用にカウント値も見れるようにしておく
+    // int16_t getCount(uint8_t id) {
+    //     switch(id) {
+    //         case 0: return count0;
+    //         case 1: return count1;
+    //         case 2: return count2;
+    //         case 3: return count3;
+    //         default: return 0;
+    //     }
+    // }
 
 private:
     int16_t count0, count1, count2, count3; // 生のパルス数
-    double speed0, speed1, speed2, speed3; // 計算した速度 (km/h)
-    int16_t processed_speed0, processed_speed1, processed_speed2, processed_speed3; // CAN送信用の整数速度
-    int16_t angle0, angle1, angle2, angle3; // 角度
+    int16_t last_count0, last_count1, last_count2, last_count3;
+    double delta_angle0, delta_angle1, delta_angle2, delta_angle3;
+    int16_t send_angle0, send_angle1, send_angle2, send_angle3; // 送信用角度データ
     unsigned long lastGetCountTime; // 前回計算した時刻
 
     pcnt_config_t pcnt_config0 =
