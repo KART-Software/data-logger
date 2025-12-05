@@ -51,11 +51,20 @@ void WheelSpeed::read()
 
 void WheelSpeed::process()
 {
-    //最新の値を読む(count変数とlastGetCountTimeが更新される)
-    read();
+    unsigned long prev_time = lastGetCountTime;
+    read(); 
+    unsigned long current_time = lastGetCountTime;
+
+    //経過時間 [ms]
+    unsigned long dt_ms = current_time - prev_time;
+
+    // ゼロ除算防止（dtが0なら計算しない）
+    if (dt_ms == 0) return;
+
+    // 3. 時間を「秒」に変換
+    float time_sec = (float)dt_ms / 1000.0;
     
-    //パルスあたりの角度 [度]
-    double deg_per_pulse = 360.0 / NUM_OF_TEETH;
+    float dist_per_pulse = (WHEELDIAMETER * M_PI) / NUM_OF_TEETH;
 
     //差分計算 (前回から何パルス進んだか)
     int16_t diff0 = count0 - last_count0;
@@ -69,46 +78,40 @@ void WheelSpeed::process()
     last_count2 = count2;
     last_count3 = count3;
 
-    //角度に変換 [度]
-    delta_angle0 = (double)diff0 * deg_per_pulse;
-    delta_angle1 = (double)diff1 * deg_per_pulse;
-    delta_angle2 = (double)diff2 * deg_per_pulse;
-    delta_angle3 = (double)diff3 * deg_per_pulse;
+    //速度計算: (距離 / 時間) * 3.6
+    speed0 = ((float)diff0 * dist_per_pulse / time_sec) * 3.6;
+    speed1 = ((float)diff1 * dist_per_pulse / time_sec) * 3.6;
+    speed2 = ((float)diff2 * dist_per_pulse / time_sec) * 3.6;
+    speed3 = ((float)diff3 * dist_per_pulse / time_sec) * 3.6;
     
 }
 
 void WheelSpeed::getBytes(uint8_t *bytes, uint startByte)
 {
-    //回転角度を 10倍して整数化 (0.1度単位)
-    send_angle0 = (int16_t)round(delta_angle0 * 10.0);
-    send_angle1 = (int16_t)round(delta_angle1 * 10.0);
-    send_angle2 = (int16_t)round(delta_angle2 * 10.0);
-    send_angle3 = (int16_t)round(delta_angle3 * 10.0);
+    //時速を 10倍して整数化 (0.1度単位)
+    send_speed0 = (int16_t)round(speed0 * 10.0);
+    send_speed1 = (int16_t)round(speed1 * 10.0);
+    send_speed2 = (int16_t)round(speed2 * 10.0);
+    send_speed3 = (int16_t)round(speed3 * 10.0);
 
-    // バイト配列に格納 (合計16バイト)
-    // [Rawカウント(2B)] + [回転角度(2B)] のセット
-    // --- タイヤ0 ---
-    bytes[startByte + 0] = (count0 >> 8) & 0xFF;
-    bytes[startByte + 1] = count0 & 0xFF;
-    bytes[startByte + 2] = (send_angle0 >> 8) & 0xFF;
-    bytes[startByte + 3] = send_angle0 & 0xFF;
-
-    // --- タイヤ1 ---
-    bytes[startByte + 4] = (count1 >> 8) & 0xFF;
-    bytes[startByte + 5] = count1 & 0xFF;
-    bytes[startByte + 6] = (send_angle1 >> 8) & 0xFF;
-    bytes[startByte + 7] = send_angle1 & 0xFF;
-
-    // --- タイヤ2 ---
-    bytes[startByte + 8] = (count2 >> 8) & 0xFF;
-    bytes[startByte + 9] = count2 & 0xFF;
-    bytes[startByte + 10] = (send_angle2 >> 8) & 0xFF;
-    bytes[startByte + 11] = send_angle2 & 0xFF;
-
-    // --- タイヤ3 ---
-    bytes[startByte + 12] = (count3 >> 8) & 0xFF;
-    bytes[startByte + 13] = count3 & 0xFF;
-    bytes[startByte + 14] = (send_angle3 >> 8) & 0xFF;
-    bytes[startByte + 15] = send_angle3 & 0xFF;
+    // バイト配列に格納 (合計16バイト)    
+    bytes[startByte + 0] = (send_speed0 >> 8) & 0xFF;
+    bytes[startByte + 1] = send_speed0 & 0xFF;
+    bytes[startByte + 2] = (send_speed1 >> 8) & 0xFF;
+    bytes[startByte + 3] = send_speed1 & 0xFF;
+    bytes[startByte + 4] = (send_speed2 >> 8) & 0xFF;
+    bytes[startByte + 5] = send_speed2 & 0xFF;
+    bytes[startByte + 6] = (send_speed3 >> 8) & 0xFF;
+    bytes[startByte + 7] = send_speed3 & 0xFF;
+    
+    bytes[startByte + 8] = (count0 >> 8) & 0xFF;
+    bytes[startByte + 9] = count0 & 0xFF;
+    bytes[startByte + 10] = (count1 >> 8) & 0xFF;
+    bytes[startByte + 11] = count1 & 0xFF;
+    bytes[startByte + 12] = (count2 >> 8) & 0xFF;
+    bytes[startByte + 13] = count2 & 0xFF;
+    bytes[startByte + 14] = (count3 >> 8) & 0xFF;
+    bytes[startByte + 15] = count3 & 0xFF;
 }
+   
 

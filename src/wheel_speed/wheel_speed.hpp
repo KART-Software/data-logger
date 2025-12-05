@@ -36,10 +36,10 @@ public:
     // }
 
 private:
-    int16_t count0, count1, count2, count3; // 生のパルス数
-    int16_t last_count0, last_count1, last_count2, last_count3;
-    double delta_angle0, delta_angle1, delta_angle2, delta_angle3;
-    int16_t send_angle0, send_angle1, send_angle2, send_angle3; // 送信用角度データ
+    int16_t count0, count1, count2, count3; // 現在の累積カウント
+    int16_t last_count0, last_count1, last_count2, last_count3; // 前回のカウント
+    double speed0, speed1, speed2, speed3; // 計算した速度 (km/h)
+    int16_t send_speed0, send_speed1, send_speed2, send_speed3; // 送信用整数 (km/h * 10)
     unsigned long lastGetCountTime; // 前回計算した時刻
 
     pcnt_config_t pcnt_config0 =

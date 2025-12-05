@@ -33,7 +33,20 @@ esp_err_t CanMaster::send()
     esp_err_t err = ESP_OK;
     for (int i = 0; 8 * i < CAN_DATA_LENGTH; i++)
     {
-        err |= bus.send(i + CAN_ID_START, min(8, CAN_DATA_LENGTH - 8 * i), &data[8 * i]);
+        int currentId = i + CAN_ID_START;
+        
+        // 送信実行
+        esp_err_t result = bus.send(currentId, min(8, CAN_DATA_LENGTH - 8 * i), &data[8 * i]);
+        
+        // ★失敗したときだけログを出す（これでログの文字化けが直ります）
+        if (result != ESP_OK) {
+            Serial.print("FAIL ID: ");
+            Serial.print(currentId, HEX);
+            Serial.print(" ErrCode: ");
+            Serial.println(result, HEX); // 105(Timeout) や 107(BusOff) などが出るはず
+        }
+
+        err |= result;
         delay(1);
     }
     return err;
