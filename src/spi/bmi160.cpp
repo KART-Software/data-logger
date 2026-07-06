@@ -67,8 +67,8 @@ void Bmi160::getBytes(uint8_t *bytes, uint startByte)
 
     bytes[startByte + 6] = (accelGyro.gyro.x >> 8) & 0xFF;
     bytes[startByte + 7] = accelGyro.gyro.x & 0xFF;
-    bytes[startByte + 8] = (accelGyro.gyro.x >> 8) & 0xFF;
-    bytes[startByte + 9] = accelGyro.gyro.x & 0xFF;
-    bytes[startByte + 10] = (accelGyro.gyro.x >> 8) & 0xFF;
-    bytes[startByte + 11] = accelGyro.gyro.x & 0xFF;
+    bytes[startByte + 8] = (accelGyro.gyro.y >> 8) & 0xFF;
+    bytes[startByte + 9] = accelGyro.gyro.y & 0xFF;
+    bytes[startByte + 10] = (accelGyro.gyro.z >> 8) & 0xFF;
+    bytes[startByte + 11] = accelGyro.gyro.z & 0xFF;
 }

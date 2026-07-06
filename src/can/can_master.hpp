@@ -5,6 +5,8 @@
 #include "spi/bmi160.hpp"
 #include "spi/ads8688.hpp"
 #include "gps/gps.hpp"
+#include "freertos/FreeRTOS.h"
+#include "freertos/semphr.h"
 
 #define CAN_ID_START 0x700
 
@@ -22,6 +24,9 @@ public:
     esp_err_t initialize();
     esp_err_t send();
     void run();
+    // センサキャッシュ保護用ミューテックス。loop()(別コア)のセンサ更新と
+    // CAN タスクの getData() 読み出しを排他するため共有する。
+    SemaphoreHandle_t getSensorMutex() { return sensorMutex; }
 
 private:
     CanBus bus = CanBus();
@@ -29,6 +34,7 @@ private:
     Ads8688 &ads8688;
     GPS &gps;
     uint8_t data[CAN_DATA_LENGTH];
+    SemaphoreHandle_t sensorMutex = nullptr;
 
     void getData();
 };

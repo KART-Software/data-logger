@@ -27,12 +27,26 @@ void setup()
 
     gps.initialize();
 
-    canMaster.initialize();
-    xTaskCreatePinnedToCore(startCan, "CanSendTask", 8192, (void *)&canMaster, 1, &canSendTask, 0);
+    esp_err_t canErr = canMaster.initialize();
+    Serial.printf("can initialize: %d\n", canErr);
+    if (canErr == ESP_OK)
+    {
+        xTaskCreatePinnedToCore(startCan, "CanSendTask", 8192, (void *)&canMaster, 1, &canSendTask, 0);
+    }
+    else
+    {
+        Serial.println("CAN init failed; CanSendTask not started");
+    }
 }
 
 void loop()
 {
+    // センサ更新は CAN タスク(別コア)の getData() 読み出しと排他する。
+    SemaphoreHandle_t m = canMaster.getSensorMutex();
+    if (m != nullptr)
+    {
+        xSemaphoreTake(m, portMAX_DELAY);
+    }
     bool gpsValid = gps.tryGetGps();
     AccelGyro ag = bmi160.getAccelGyro();
     // if (ag.bmi160OK == BMI160_OK)
@@ -44,6 +58,10 @@ void loop()
     // {
     //     Serial.printf("vol: %f\n", ads8688.getVoltage(6));
     // }
+    if (m != nullptr)
+    {
+        xSemaphoreGive(m);
+    }
 
     delay(1);
 }
