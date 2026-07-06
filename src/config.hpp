@@ -31,6 +31,8 @@
 
 #define CAN_TX_PIN 35
 #define CAN_RX_PIN 36
+#define CAN_TX_QUEUE_LEN 32    // 1サイクルの最大送信本数以上に (現状15本 + 将来余裕)
+#define CAN_TX_TIMEOUT_MS 10   // 送信キュー空き待ちの上限[ms]。0 だと満杯時にフレーム脱落
 
 ///////////
 /// GPS ///

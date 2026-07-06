@@ -10,7 +10,8 @@ class CanBus
 public:
     CanBus(uint8_t txPin = CAN_TX_PIN, uint8_t rxPin = CAN_RX_PIN);
     esp_err_t initialize();
-    esp_err_t send(uint16_t id, uint8_t dlc, uint8_t *data);
+    esp_err_t send(uint16_t id, uint8_t dlc, const uint8_t *data);
+    void recover();  // bus-off を検出したら復帰を試みる
 
 private:
     uint8_t txPin, rxPin;
