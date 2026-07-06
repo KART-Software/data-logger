@@ -7,6 +7,7 @@
 #include "gps/gps.hpp"
 #include "freertos/FreeRTOS.h"
 #include "freertos/semphr.h"
+#include "util/toggle_switch.hpp"
 
 #define CAN_ID_START 0x700
 
@@ -16,6 +17,19 @@
 
 #define CAN_DATA_LENGTH (BMI160_DATA_LENGTH + ADS8688_DATA_LENGTH + GPS_DATA_LENGTH) // 120
 #define CAN_NUM_MESSAGES 15
+
+// 制御フレーム (drive-controller 宛)。ID と byte 配置は kz-can can.yaml / drive-controller と一致:
+//   byte0 = ETC mode / byte1 = launch(0x01=on) / byte2 = auto-shift(0x01=on)
+#define CAN_ID_CONTROL 0x740
+
+// 0x740 byte0 (ETC mode) の値。
+enum CanControlMode : uint8_t
+{
+    CTRL_MODE_CALIB = 1,
+    CTRL_MODE_NORMAL = 2,
+    CTRL_MODE_RESTRICTED = 3,
+    CTRL_MODE_MOTOR_OFF = 4,
+};
 
 class CanMaster
 {
@@ -36,7 +50,13 @@ private:
     uint8_t data[CAN_DATA_LENGTH];
     SemaphoreHandle_t sensorMutex = nullptr;
 
+    // 制御スイッチ (CAN タスク内で read/送信するため別コア共有なし)。
+    SelectSwitch3Pin modeSwitch = SelectSwitch3Pin(MODE_SELECT_SW_PIN_1, MODE_SELECT_SW_PIN_2, MODE_SELECT_SW_PIN_3);
+    ToggleSwitch launchSwitch = ToggleSwitch(LAUNCH_SW_PIN);
+    ToggleSwitch autoShiftSwitch = ToggleSwitch(AUTO_SHIFT_SW_PIN);
+
     void getData();
+    esp_err_t sendControl();  // スイッチ状態を 0x740 制御フレームとして送信
 };
 
 void startCan(void *canMaster);

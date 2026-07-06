@@ -8,6 +8,22 @@ static_assert(GPS_DATA_LENGTH == UBX_NAV_PVT_LEN,
 static_assert(CAN_NUM_MESSAGES == (CAN_DATA_LENGTH + 7) / 8,
               "CAN_NUM_MESSAGES must match the number of 8-byte frames");
 
+namespace {
+// モード選択スイッチのポジション → 0x740 byte0 (ETC mode)。
+// TODO: ポジションとモードの対応は暫定。実機のスイッチ配置に合わせて確定する。
+uint8_t modeToByte(SelectSwitch3Pin::Status s)
+{
+    switch (s)
+    {
+        case SelectSwitch3Pin::Status::First:  return CTRL_MODE_CALIB;
+        case SelectSwitch3Pin::Status::Second: return CTRL_MODE_RESTRICTED;
+        case SelectSwitch3Pin::Status::Third:  return CTRL_MODE_MOTOR_OFF;
+        case SelectSwitch3Pin::Status::Zero:
+        default:                               return CTRL_MODE_NORMAL;
+    }
+}
+}  // namespace
+
 CanMaster::CanMaster(Bmi160 &bmi160, Ads8688 &ads8688, GPS &gps) : bmi160(bmi160), ads8688(ads8688), gps(gps)
 {
 }
@@ -15,6 +31,9 @@ CanMaster::CanMaster(Bmi160 &bmi160, Ads8688 &ads8688, GPS &gps) : bmi160(bmi160
 esp_err_t CanMaster::initialize()
 {
     sensorMutex = xSemaphoreCreateMutex();
+    modeSwitch.initialize();
+    launchSwitch.initialize();
+    autoShiftSwitch.initialize();
     return bus.initialize();
 }
 
@@ -61,7 +80,23 @@ void CanMaster::run()
         bus.recover();  // bus-off に陥っていたら復帰を試みる
         getData();
         send();
+
+        // 制御スイッチを読み、0x740 制御フレームを送信 (~33ms 周期。
+        // ToggleSwitch のデバウンスは 100ms なので 33ms サンプリングで十分)。
+        modeSwitch.read();
+        launchSwitch.read();
+        autoShiftSwitch.read();
+        sendControl();
     }
+}
+
+esp_err_t CanMaster::sendControl()
+{
+    uint8_t buf[3];
+    buf[0] = modeToByte(modeSwitch.getStatus());
+    buf[1] = launchSwitch.isOn() ? 0x01 : 0x00;
+    buf[2] = autoShiftSwitch.isOn() ? 0x01 : 0x00;
+    return bus.send(CAN_ID_CONTROL, 3, buf);
 }
 
 void startCan(void *canMaster)
