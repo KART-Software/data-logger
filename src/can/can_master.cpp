@@ -10,16 +10,15 @@ static_assert(CAN_NUM_MESSAGES == (CAN_DATA_LENGTH + 7) / 8,
 
 namespace {
 // モード選択スイッチのポジション → 0x740 byte0 (ETC mode)。
-// TODO: ポジションとモードの対応は暫定。実機のスイッチ配置に合わせて確定する。
 uint8_t modeToByte(SelectSwitch3Pin::Status s)
 {
     switch (s)
     {
-        case SelectSwitch3Pin::Status::First:  return CTRL_MODE_CALIB;
+        case SelectSwitch3Pin::Status::First:  return CTRL_MODE_NORMAL;
         case SelectSwitch3Pin::Status::Second: return CTRL_MODE_RESTRICTED;
         case SelectSwitch3Pin::Status::Third:  return CTRL_MODE_MOTOR_OFF;
         case SelectSwitch3Pin::Status::Zero:
-        default:                               return CTRL_MODE_NORMAL;
+        default:                               return CTRL_MODE_CALIB;
     }
 }
 }  // namespace
