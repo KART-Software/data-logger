@@ -9,8 +9,6 @@
 #include "freertos/semphr.h"
 #include "util/toggle_switch.hpp"
 
-#define CAN_ID_START 0x700
-
 #define BMI160_DATA_LENGTH 12
 #define ADS8688_DATA_LENGTH 16
 #define GPS_DATA_LENGTH 92
@@ -18,11 +16,7 @@
 #define CAN_DATA_LENGTH (BMI160_DATA_LENGTH + ADS8688_DATA_LENGTH + GPS_DATA_LENGTH) // 120
 #define CAN_NUM_MESSAGES 15
 
-// 制御フレーム (drive-controller 宛)。ID と byte 配置は kz-can can.yaml / drive-controller と一致:
-//   byte0 = ETC mode / byte1 = launch(0x01=on) / byte2 = auto-shift(0x01=on)
-#define CAN_ID_CONTROL 0x740
-
-// 0x740 byte0 (ETC mode) の値。
+// KartControl(0x740) byte0 = ETC mode の値。ID/レイアウトは kart-can (生成 kart.h) を使用。
 enum CanControlMode : uint8_t
 {
     CTRL_MODE_CALIB = 1,
@@ -34,12 +28,13 @@ enum CanControlMode : uint8_t
 class CanMaster
 {
 public:
-    CanMaster(Bmi160 &bmi160, Ads8688 &ads8688, GPS &gps);
+    CanMaster(Bmi160 &bmi160, Ads8688 &ads8688, GPS &gps,
+              SelectSwitch3Pin &modeSwitch, ToggleSwitch &launchSwitch, ToggleSwitch &autoShiftSwitch);
     esp_err_t initialize();
     esp_err_t send();
     void run();
-    // センサキャッシュ保護用ミューテックス。loop()(別コア)のセンサ更新と
-    // CAN タスクの getData() 読み出しを排他するため共有する。
+    // 入力(センサ/スイッチ)保護用ミューテックス。loop()(別コア)のサンプリングと
+    // CAN タスクの状態読み出しを排他するため共有する。
     SemaphoreHandle_t getSensorMutex() { return sensorMutex; }
 
 private:
@@ -47,16 +42,16 @@ private:
     Bmi160 &bmi160;
     Ads8688 &ads8688;
     GPS &gps;
-    uint8_t data[CAN_DATA_LENGTH];
     SemaphoreHandle_t sensorMutex = nullptr;
+    uint8_t data[CAN_DATA_LENGTH] = {};  // センサ生バイトを集約する120Bバッファ (GPS getBytes失敗時は前回値保持)
 
-    // 制御スイッチ (CAN タスク内で read/送信するため別コア共有なし)。
-    SelectSwitch3Pin modeSwitch = SelectSwitch3Pin(MODE_SELECT_SW_PIN_1, MODE_SELECT_SW_PIN_2, MODE_SELECT_SW_PIN_3);
-    ToggleSwitch launchSwitch = ToggleSwitch(LAUNCH_SW_PIN);
-    ToggleSwitch autoShiftSwitch = ToggleSwitch(AUTO_SHIFT_SW_PIN);
+    // 制御スイッチ (所有は main。サンプリングは loop() で、ここでは状態を読むだけ)。
+    SelectSwitch3Pin &modeSwitch;
+    ToggleSwitch &launchSwitch;
+    ToggleSwitch &autoShiftSwitch;
 
-    void getData();
-    esp_err_t sendControl();  // スイッチ状態を 0x740 制御フレームとして送信
+    void getData();           // センサ生バイトを 120B バッファ data[] に集約
+    esp_err_t sendControl();  // スイッチ状態を Control(0x740) として pack 送信
 };
 
 void startCan(void *canMaster);
