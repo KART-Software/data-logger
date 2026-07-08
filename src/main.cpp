@@ -5,13 +5,20 @@
 #include "gps/gps.hpp"
 #include <Arduino.h>
 #include "can/can_master.hpp"
+#include "util/toggle_switch.hpp"
 
 SpiBus spi2 = SpiBus(SPI2_HOST, SPI_BUS_2_CONFIG);
 Bmi160 bmi160 = Bmi160();
 Ads8688 ads8688 = Ads8688();
 GPS gps;
 
-CanMaster canMaster = CanMaster(bmi160, ads8688, gps);
+// 制御スイッチ (入力デバイス)。サンプリング(.read())は loop() で行い、
+// CanMaster は状態を読むだけ (センサと同じ扱い)。
+SelectSwitch3Pin modeSwitch = SelectSwitch3Pin(MODE_SELECT_SW_PIN_1, MODE_SELECT_SW_PIN_2, MODE_SELECT_SW_PIN_3);
+ToggleSwitch launchSwitch = ToggleSwitch(LAUNCH_SW_PIN);
+ToggleSwitch autoShiftSwitch = ToggleSwitch(AUTO_SHIFT_SW_PIN);
+
+CanMaster canMaster = CanMaster(bmi160, ads8688, gps, modeSwitch, launchSwitch, autoShiftSwitch);
 TaskHandle_t canSendTask;
 
 void setup()
@@ -27,6 +34,10 @@ void setup()
 
     gps.initialize();
 
+    modeSwitch.initialize();
+    launchSwitch.initialize();
+    autoShiftSwitch.initialize();
+
     esp_err_t canErr = canMaster.initialize();
     Serial.printf("can initialize: %d\n", canErr);
     if (canErr == ESP_OK)
@@ -41,7 +52,7 @@ void setup()
 
 void loop()
 {
-    // センサ更新は CAN タスク(別コア)の getData() 読み出しと排他する。
+    // センサ・スイッチのサンプリングは CAN タスク(別コア)の状態読み出しと排他する。
     SemaphoreHandle_t m = canMaster.getSensorMutex();
     if (m != nullptr)
     {
@@ -58,6 +69,10 @@ void loop()
     // {
     //     Serial.printf("vol: %f\n", ads8688.getVoltage(6));
     // }
+    // 制御スイッチのサンプリング(デバウンス)。状態は CanMaster が送信時に読む。
+    modeSwitch.read();
+    launchSwitch.read();
+    autoShiftSwitch.read();
     if (m != nullptr)
     {
         xSemaphoreGive(m);

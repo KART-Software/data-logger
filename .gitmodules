@@ -4,3 +4,6 @@
 [submodule "lib/SparkFun_u-blox_GNSS_Arduino_Library"]
 	path = lib/SparkFun_u-blox_GNSS_Arduino_Library
 	url = https://github.com/sparkfun/SparkFun_u-blox_GNSS_Arduino_Library.git
+[submodule "lib/kart-can"]
+	path = lib/kart-can
+	url = https://github.com/KART-Software/kart-can.git
