@@ -38,6 +38,10 @@
 /// 制御スイッチ入力 ///
 //////////////////////
 
+// 0x740 制御出力の有効化トグル。既定は無効 (制御出力は drive-controller が GPIO 直入力
+// から Control(0x740) を送出する方式へ移行したため)。CAN 出力へ戻すときは下を有効化する。
+// #define CONTROL_OUTPUT_VIA_CAN
+
 // drive-controller への制御フレーム(0x740)の入力源。
 // TODO: 暫定ピン。実配線で確定する (SPI2:11-14 / SPI3:15-18 / CS:10,14,18 / CAN:35,36 は使用済み)。
 #define MODE_SELECT_SW_PIN_1 4  // SelectSwitch3Pin: First
