@@ -83,7 +83,9 @@ void CanMaster::run()
         bus.recover();  // bus-off に陥っていたら復帰を試みる
         getData();
         send();
+#if defined(CONTROL_OUTPUT_VIA_CAN)
         sendControl();  // スイッチ状態(loop()でサンプリング済み)から制御フレームを送信
+#endif
     }
 }
 

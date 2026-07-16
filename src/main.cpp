@@ -34,9 +34,11 @@ void setup()
 
     gps.initialize();
 
+#if defined(CONTROL_OUTPUT_VIA_CAN)
     modeSwitch.initialize();
     launchSwitch.initialize();
     autoShiftSwitch.initialize();
+#endif
 
     esp_err_t canErr = canMaster.initialize();
     Serial.printf("can initialize: %d\n", canErr);
@@ -69,10 +71,12 @@ void loop()
     // {
     //     Serial.printf("vol: %f\n", ads8688.getVoltage(6));
     // }
+#if defined(CONTROL_OUTPUT_VIA_CAN)
     // 制御スイッチのサンプリング(デバウンス)。状態は CanMaster が送信時に読む。
     modeSwitch.read();
     launchSwitch.read();
     autoShiftSwitch.read();
+#endif
     if (m != nullptr)
     {
         xSemaphoreGive(m);
